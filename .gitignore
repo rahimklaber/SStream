@@ -1,0 +1,6 @@
+/target
+/Cargo.lock
+/ts_playground/node_modules
+/.soroban/
+/ui/node_modules
+/node_modules/
