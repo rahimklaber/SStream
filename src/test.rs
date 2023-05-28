@@ -1,22 +1,24 @@
 extern crate std;
 use std::println;
 
-use soroban_sdk::{Address, Bytes, Env};
+use soroban_sdk::{Address, Env};
 use soroban_sdk::testutils::{Address as _, Ledger, LedgerInfo};
-use soroban_sdk::xdr::TypeVariant::ScMap;
 use crate::types::Stream;
-use crate::{Contract, StreamContractTrait, token, ContractClient};
+use crate::{Contract, ContractClient};
+use soroban_sdk::token::Client as tokenClient;
 
 #[test]
 fn basic_test(){
     let env: Env = Default::default();
+
+    env.mock_all_auths();
 
 
     let user_1 = Address::random(&env);
     let user_2 = Address::random(&env);
 
     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
-    let token_client = token::Client::new(&env, &token_contract_id);
+    let token_client = tokenClient::new(&env, &token_contract_id);
 
 
     let stream_contract_id = env.register_contract(None, Contract);
@@ -25,18 +27,17 @@ fn basic_test(){
 
     token_client.mint(
         &user_1,
-        &user_1,
         &100,
     );
 
 
-    let stream_id = stream_client.c_stream(&Stream{
+    let stream_id = stream_client.create_stream(&Stream{
         from: user_1.clone(),
         to: user_2.clone(),
         amount: 100,
         start_time: 0,
         end_time: 10,
-        tick_time: 1,
+        amount_per_second: 10,
         token_id: token_contract_id.clone(),
         able_stop: false,
     });
@@ -52,11 +53,11 @@ fn basic_test(){
         network_id: Default::default()
     });
 
-    stream_client.w_stream(&stream_id);
+    stream_client.withdraw_stream(&stream_id);
 
     assert_eq!(50, token_client.balance(&user_2),"user2 should have a balance of 50 after claiming from the stream");    
 
-    stream_client.w_stream(&stream_id);
+    stream_client.withdraw_stream(&stream_id);
 
     assert_eq!(50, token_client.balance(&user_2),"a user cant withdraw the same money multiple times. so no double spending");    
 }

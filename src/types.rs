@@ -8,10 +8,9 @@ pub struct Stream {
     pub amount : i128,
     pub start_time: u64,
     pub end_time: u64,
-    // every `tick_time` there is a new tick
-    pub tick_time: u64, //todo, replace this by per minute?
+    pub amount_per_second: u64, //i128?
     // token contract id
-    pub token_id : BytesN<32>,
+    pub token_id : Address,
     //whether the creator can cancell the stream.
     pub able_stop : bool
 }

@@ -1,13 +1,15 @@
 import {Account, Address, Contract, Keypair, Networks, Server, TransactionBuilder, xdr} from "soroban-client";
 import {IStream, Stream} from "./types";
 import {fromXdr} from "./xdrHelpers";
+import {sleep} from "@antfu/utils";
 
 let server = new Server(" https://rpc-futurenet.stellar.org")
-const contractId = "c01363d593be6c7314d4955a38bf5af9876ba89c716dc772c5ebd4d09ad2bc30"
+const contractId = "60f3b5882643e2af016c6e2ef50b54130c12a65c2ba4ebace7dd1e3416a40db0"
 const contract = new Contract(contractId)
 //GBT2BOJTKZ5YA6BS2OR2GFFCXHP2YXGLSFYLZTPZC5UXWUX33AGGGVPA
 const keypair = Keypair.fromSecret("SC2YJ45OHIKGMHBB77V2KKV2JYLVT5UMAD6GSXNI7WLTX5F2LHWYAEMO")
-const account = await server.getAccount(keypair.publicKey())
+// const account = await server.getAccount(keypair.publicKey())
+
 
 async function getStream(streamId: number){
     let transaction = new TransactionBuilder(account, {
@@ -21,7 +23,6 @@ async function getStream(streamId: number){
         .build()
 
     let result = await server.simulateTransaction(transaction)
-    console.log(result)
     if (result.results) {
         let scval = xdr.ScVal.fromXDR(result.results[0].xdr, "base64")
         return fromXdr(scval)
@@ -35,7 +36,7 @@ async function createStream(stream: Stream, from: Keypair){
         networkPassphrase: Networks.FUTURENET
     })
         .addOperation(
-            contract.call("c_stream", stream.toXdr())
+            contract.call("create_stream", stream.toXdr())
         )
         .setTimeout(30)
         .build()
@@ -56,12 +57,12 @@ let stream = new Stream(
     {
         able_stop: true,
         amount: 1000000000n,
-        start_time: 1683322114,
-        end_time: 1683401314,
+        start_time: Math.floor(Date.now() / 1000),
+        end_time: Math.floor(Date.now() / 1000) + 100000000,
         from: Address.fromString(keypair.publicKey()),
         to: Address.fromString(secondKeyPair.publicKey()),
-        tick_time: 10,
-        token_id:  Buffer.alloc(32,"d98fc10ef20b3291ceb69d3170fa7965e98c67ad81983ce6d326cfbe56dfd20a", "hex")
+        amount_per_second: 10,
+        token_id:  Buffer.alloc(32,"d93f5c7bb0ebc4a9c8f727c5cebc4e41194d38257e1d0d910356b43bfc528813", "hex")
     }
 )
 
@@ -84,16 +85,15 @@ interface IStreamAndData{
     }
 }
 
-
+// await createStream(stream, keypair)
 // console.log(await getStream(0))
 // while (true){
 //     let streamFromRpc: IStreamAndData = await getStream(0)
-//     let secondsFromStart = Date.now()/1000 - streamFromRpc.stream.start_time
+//     let secondsFromStart = Math.floor(Date.now()/1000 - streamFromRpc.stream.start_time)
 //     let hoursFromStart = secondsFromStart / 3600
-//     let amountPerTick = Math.floor((streamFromRpc.stream.end_time - streamFromRpc.stream.start_time) / streamFromRpc.stream.tick_time)
-//     let amountClaimable = BigInt(Math.floor(secondsFromStart / streamFromRpc.stream.tick_time) * amountPerTick) - streamFromRpc.data.a_withdraw
-//     console.log(hoursFromStart)
-//     console.log(amountClaimable)
-//     console.log(streamFromRpc.stream.amount - amountClaimable)
-//     await sleep(1000)
+//     let amountClaimable = BigInt(secondsFromStart * stream.amount_per_second) - streamFromRpc.data.a_withdraw
+//     console.log(`hours from start: ${hoursFromStart}, claimable: ${amountClaimable}`)
+//     await sleep(10000)
 // }
+
+console.log(Address.contract(Buffer.alloc(32, "d93f5c7bb0ebc4a9c8f727c5cebc4e41194d38257e1d0d910356b43bfc528813", "hex")).toString());

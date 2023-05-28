@@ -56,6 +56,6 @@
     "*": "eslint --fix"
   },
   "dependencies": {
-    "soroban-client": "^0.5.1"
+    "soroban-client": "^0.7.0"
   }
 }

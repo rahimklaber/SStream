@@ -1,10 +1,10 @@
 {
   "able_stop": true,
-  "amount": "1000000000",
-  "end_time": 1683315944,
-  "from": "GDYVTRT3MFDH2SG6VMPAHIWHHK4SLI4MGB353EYQOIW5TSLRBVR2TE36",
-  "start_time": 1683229544,
-  "tick_time": 1,
-  "to": "GBT2BOJTKZ5YA6BS2OR2GFFCXHP2YXGLSFYLZTPZC5UXWUX33AGGGVPA",
-  "token_id": "d98fc10ef20b3291ceb69d3170fa7965e98c67ad81983ce6d326cfbe56dfd20a"
+  "amount": "-100",
+  "amount_per_second": 42,
+  "end_time": 42,
+  "from": "GDIY6AQQ75WMD4W46EYB7O6UYMHOCGQHLAQGQTKHDX4J2DYQCHVCR4W4",
+  "start_time": 42,
+  "to": "GDIY6AQQ75WMD4W46EYB7O6UYMHOCGQHLAQGQTKHDX4J2DYQCHVCR4W4",
+  "token_id": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef"
 }

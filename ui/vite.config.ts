@@ -1,10 +1,10 @@
-import solid from "solid-start/vite";
+import solidPlugin from 'vite-plugin-solid';
 import { defineConfig } from "vite";
 import solidStyled from "vite-plugin-solid-styled";
 
 export default defineConfig({
   plugins: [
-    solid({ ssr: false }),
+    solidPlugin(),
     solidStyled({
       filter: {
         include: "src/**/*.tsx",
@@ -12,4 +12,10 @@ export default defineConfig({
       },
     }),
   ],
+  server : {
+    port: 3000
+  },
+  build: {
+    target: 'esnext',
+  },
 });

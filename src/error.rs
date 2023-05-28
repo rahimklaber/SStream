@@ -9,4 +9,5 @@ pub enum Error {
     StreamCancelled = 3,
     StreamNotCancellable = 4,
     StreamDone = 5,
+    StreamValidationFailed = 6,
 }

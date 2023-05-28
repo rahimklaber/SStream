@@ -8,8 +8,16 @@ export interface IStream{
     start_time: number,
     end_time: number,
     amount_per_second: number,
-    token_id: Buffer,
+    token_id: Address,
     able_stop: boolean
+}
+
+export interface IStreamAndData{
+    stream: IStream,
+    data : {
+        a_withdraw: bigint,
+        cancelled: boolean
+    }
 }
 
 export class Stream implements IStream{
@@ -20,7 +28,7 @@ export class Stream implements IStream{
     from: Address;
     start_time: number;
     to: Address;
-    token_id: Buffer;
+    token_id: Address;
 
     constructor(args: IStream) {
         this.able_stop = args.able_stop;
@@ -43,7 +51,7 @@ export class Stream implements IStream{
                 new xdr.ScMapEntry({key: xdr.ScVal.scvSymbol("from"), val: this.from.toScVal()}),
                 new xdr.ScMapEntry({key: xdr.ScVal.scvSymbol("start_time"), val: xdr.ScVal.scvU64(xdr.Uint64.fromString(this.start_time.toString()))}),
                 new xdr.ScMapEntry({key: xdr.ScVal.scvSymbol("to"), val: this.to.toScVal()}),
-                new xdr.ScMapEntry({key: xdr.ScVal.scvSymbol("token_id"), val: xdr.ScVal.scvBytes(this.token_id)}),
+                new xdr.ScMapEntry({key: xdr.ScVal.scvSymbol("token_id"), val: this.token_id.toScVal()}),
 
             ]
         )

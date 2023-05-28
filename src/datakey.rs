@@ -33,7 +33,7 @@ pub fn get_stream(env: &Env, stream_id: u64) -> Stream{
 }
 
 pub fn get_stream_data(env: &Env, stream_id: u64) -> StreamData{
-    let data: Option<Result<StreamData, _>> = env.data()
+    let data: Option<Result<StreamData, _>> = env.storage()
     .get(&DataKey::StreamData(stream_id));
 
     match data{
