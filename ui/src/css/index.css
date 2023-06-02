@@ -1,0 +1,11 @@
+.w-fit{
+    width: fit-content;
+}
+
+.min-w-25{
+    min-width: 25%;
+}
+
+.max-w-50{
+    max-width: 50%;
+}

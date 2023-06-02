@@ -23,19 +23,8 @@ export default function CreateStream() {
     const [done, setDone] = createSignal(false)
     return (
 
-        <Card class="w-25 m-auto mt-5">
-            <Show 
-            when={loading()}
-            fallback=""
-            >
-                loading...
-            </Show>
-            <Show 
-            when={done()}
-            fallback=""
-            >
-                {JSON.stringify(txResult())}
-            </Show>
+        <Card class="m-auto max-w-50 min-w-25 w-fit mt-5">
+           
             <Card.Title class="m-auto">
                 Create Stream
             </Card.Title>
@@ -85,7 +74,7 @@ export default function CreateStream() {
                                     end_time: end_time,
                                     start_time: Math.floor(Date.now() / 1000),
                                     from: Address.fromString(accountId()),
-                                    able_stop: true,
+                                    able_stop: fields.cancellable,
                                     token_id: tokenId,
                                     to: Address.fromString(fields.recipient)
                                 }
@@ -105,13 +94,25 @@ export default function CreateStream() {
                             }
                             setLoading(false)
                             setDone(true)
-                            setTimeout(() => {
-                                setDone(false)
-                            }, 5000);
+                            // setTimeout(() => {
+                            //     setDone(false)
+                            // }, 5000);
                         }
                     }>
                         Create
                     </button>
+                    <Show 
+            when={loading()}
+            fallback=""
+            >
+                loading...
+            </Show>
+            <Show 
+            when={done()}
+            fallback=""
+            >
+                result: {JSON.stringify(txResult())}
+            </Show>
             </Card.Body>
         </Card>
 
