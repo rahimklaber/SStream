@@ -9,7 +9,11 @@ export function fromXdr(scVal: xdr.ScVal): any{
         case xdr.ScValType.scvU64():
             return scVal.u64().low
         case xdr.ScValType.scvAddress():
-            return Address.account(scVal.address().accountId().value())
+            try {
+                return Address.account(scVal.address().accountId().value())
+            } catch (error) {
+                return Address.contract(scVal.address().contractId())
+            }
         case xdr.ScValType.scvBytes():
             return scVal.bytes()
         case xdr.ScValType.scvI128():

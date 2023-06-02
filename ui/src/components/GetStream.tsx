@@ -1,22 +1,26 @@
 import {createStore} from "solid-js/store";
 import {getStream} from "../contract/wrapper";
 import {createSignal, Show} from "solid-js";
-import Connect from "../components/Connect";
+import Connect, { accountId } from "../components/Connect";
 import {IStreamAndData} from "../contract/types";
+import { Card } from "solid-bootstrap";
 
 export default function GetStream() {
     const [stream, setStream] = createSignal<IStreamAndData | null>(null)
     const [streamId, setStreamId] = createSignal()
 
     async function retrieveStream(id: number) {
-        getStream("GDHYFL5YNWNV2YJDSP4IZ74VC6SDZ5UDBG5O56PSZDWGEJOVSC33MHRD", id)
+        console.log(id)
+        getStream(accountId(), id)
             .then((result) => setStream(result))
     }
 
     return (
-        <div class={"m-1"}>
-            <Connect/>
-            <br/>
+        <Card class={"m-auto w-25 "}>
+            <Card.Title class="m-auto">
+                Lookup Stream
+            </Card.Title>
+            <Card.Body class="m-auto">
             <input type={"text"} oninput={(e) => setStreamId(parseInt(e.target.value))}></input>
             <button onClick={() => retrieveStream(streamId())}>
                 Get details
@@ -44,6 +48,7 @@ export default function GetStream() {
            {/*         , 2)}*/}
            {/*</code>*/}
         </pre>
-        </div>
+            </Card.Body>
+        </Card>
     )
 }

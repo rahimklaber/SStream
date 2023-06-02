@@ -16,6 +16,7 @@ export async function getStream(accountId: string, streamId: number): Promise<IS
         .setTimeout(30)
         .build()
 
+
     let result = await sorobanClient.simulateTransaction(transaction)
     if (result.results) {
         let scval = xdr.ScVal.fromXDR(result.results[0].xdr, "base64")
@@ -42,6 +43,6 @@ export async function createStream(stream: Stream, accountID: string){
     transaction = await sign(transaction)
 
     let result = await sorobanClient.sendTransaction(transaction)
-    console.log(result)
-
+    
+    return result
 }

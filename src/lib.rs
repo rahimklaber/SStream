@@ -112,6 +112,7 @@ impl StreamContractTrait for Contract{
 
         assert_with_error!(&env, stream_data.a_withdraw < stream.amount, Error::StreamDone);
         assert_with_error!(&env, !stream_data.cancelled, Error::StreamCancelled);
+        assert_with_error!(&env, stream.able_stop, Error::StreamNotCancellable);
 
         //todo remove duplication?
         let amount_for_recipient = if stream.end_time < env.ledger().timestamp(){
