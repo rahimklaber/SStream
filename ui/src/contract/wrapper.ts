@@ -68,3 +68,26 @@ export async function withdrawStream(streamId: number, accountID: string){
     
     return result
 }
+
+
+export async function cancellStream(streamId: number, accountID: string){
+    let account = await sorobanClient.getAccount(accountID)
+    let transaction = new TransactionBuilder(account, {
+        fee: "1000",
+        networkPassphrase: Networks.FUTURENET
+    })
+        .addOperation(
+            contract.call("cancel_stream", xdr.ScVal.scvU64(xdr.Uint64.fromString(streamId.toString())))
+        )
+        .setTimeout(30)
+        .build()
+
+    // @ts-ignore
+    transaction = await sorobanClient.prepareTransaction(transaction)
+
+    transaction = await sign(transaction)
+
+    let result = await sorobanClient.sendTransaction(transaction)
+    
+    return result
+}

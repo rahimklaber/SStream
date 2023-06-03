@@ -1,5 +1,5 @@
 import { createStore } from "solid-js/store";
-import { getStream, withdrawStream } from "../contract/wrapper";
+import { cancellStream, getStream, withdrawStream } from "../contract/wrapper";
 import { createSignal, Show } from "solid-js";
 import Connect, { accountId } from "../components/Connect";
 import { IStreamAndData } from "../contract/types";
@@ -22,7 +22,60 @@ export default function GetStream() {
             .then((result) => setStream(result))
     }
 
+    async function claim(){
+        setLoading(true)
+        let submitResult = await withdrawStream(streamId()!, accountId())
+            .catch((error) => error)
+        if (!submitResult.status) {
+            setTxResult(submitResult)
+            setDone(true)
+            setLoading(false)
+            return
+        }
+        let success = await waitForTx(submitResult.hash)
+        if (success != null) {
+            let responseXdr = xdr.TransactionResult.fromXDR(success.resultXdr, "base64")
+            let scval = responseXdr.result().results()[0].tr().invokeHostFunctionResult().success()[0]
+            console.log(fromXdr(scval))
+            setTxResult(fromXdr(scval))
+        } else {
+            setTxResult("failed")
+        }
+        setLoading(false)
+        setDone(true)
+    }
+
+    async function cancell(){
+        setLoading(true)
+        let submitResult = await cancellStream(streamId()!, accountId())
+            .catch((error) => error)
+        if (!submitResult.status) {
+            setTxResult(submitResult)
+            setDone(true)
+            setLoading(false)
+            return
+        }
+        let success = await waitForTx(submitResult.hash)
+        if (success != null) {
+            let responseXdr = xdr.TransactionResult.fromXDR(success.resultXdr, "base64")
+            let scval = responseXdr.result().results()[0].tr().invokeHostFunctionResult().success()[0]
+            try{
+                console.log(fromXdr(scval))
+            setTxResult(fromXdr(scval))
+            }catch{
+                setTxResult("")
+            }
+        } else {
+            setTxResult("failed")
+        }
+        setLoading(false)
+        setDone(true)
+    }
+
     function calcAmountWithdrawable(data: IStreamAndData) : bigint{
+        if(data.data.cancelled){
+            return 0n
+        }
         let start_time = data.stream.start_time
         let end_time = data.stream.end_time
         let cur_time = Math.floor(Date.now() / 1000)
@@ -38,7 +91,7 @@ export default function GetStream() {
     }
 
     return (
-        <Card class={"m-auto max-w-50 min-w-25 w-fit"}>
+        <Card class={"m-auto min-w-25 w-fit"}>
             <Card.Title class="m-auto">
                 Lookup Stream
             </Card.Title>
@@ -61,35 +114,20 @@ export default function GetStream() {
                         )}
                     >
                         <div class={"d-flex flex-column"}>
-                            <span>from : {stream()?.stream.from.toString()}</span>
-                            <span>to : {stream()?.stream.to.toString()}</span>
-                            <span>amount: {stream()?.stream.amount.toString()}</span>
+                            <span>from : {stream().stream.from.toString()}</span>
+                            <span>to : {stream().stream.to.toString()}</span>
+                            <span>amount: {stream().stream.amount.toString()}</span>
                             <span>amount withdrawable: {calcAmountWithdrawable(stream()).toString()}</span>
+                            <span>cancellable : {stream().stream.able_stop.toString()}</span>
                             
-                            <button class="w-fit" onclick={async () => {
-                                setLoading(true)
-                                let submitResult = await withdrawStream(streamId()!, accountId())
-                                    .catch((error) => error)
-                                if (!submitResult.status) {
-                                    setTxResult(submitResult)
-                                    setDone(true)
-                                    setLoading(false)
-                                    return
-                                }
-                                let success = await waitForTx(submitResult.hash)
-                                if (success != null) {
-                                    let responseXdr = xdr.TransactionResult.fromXDR(success.resultXdr, "base64")
-                                    let scval = responseXdr.result().results()[0].tr().invokeHostFunctionResult().success()[0]
-                                    console.log(fromXdr(scval))
-                                    setTxResult(fromXdr(scval))
-                                } else {
-                                    setTxResult("failed")
-                                }
-                                setLoading(false)
-                                setDone(true)
-                            }}>
+                           <div>
+                           <button onclick={claim}>
                                 claim
                             </button>
+                            <button onclick={cancell}>
+                                cancell
+                            </button>
+                           </div>
                             <Show
                                 when={loading()}
                                 fallback=""

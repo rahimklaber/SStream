@@ -23,8 +23,8 @@ pub trait StreamContractTrait{
     // fn increase_stream(env: Env, streamd_id: u64);
     // withdraw from streaam, return amount withdrawn
     fn withdraw_stream(env: Env, stream_id : u64) -> i128;
-    //cancell/stop stream
-    fn cancel_stream(env: Env, stream_id: u64);
+    //cancell/stop stream, returns amount reclaimed by creator.
+    fn cancel_stream(env: Env, stream_id: u64) -> i128;
     // fn s_stream(env: Env, stream_id : u64);
 
     fn get_stream(env: Env, stream_id : u64) -> StreamWithData;
