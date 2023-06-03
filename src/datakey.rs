@@ -42,10 +42,10 @@ pub fn get_stream_data(env: &Env, stream_id: u64) -> StreamData{
     }
 }
 
-pub fn set_stream_data_cancelled(env: &Env, stream_id: u64){
+pub fn set_stream_data_cancelled(env: &Env, stream_id: u64, total_amount_withdrawn: i128){
     env.storage()
     .set(&DataKey::StreamData(stream_id), &StreamData{
-        a_withdraw: 0, //not sure if this should be the value withdrawn by the recipient. Technically, its not needed anymore, but it might be usefull.
+        a_withdraw: total_amount_withdrawn, //not sure if this should be the value withdrawn by the recipient. Technically, its not needed anymore, but it might be usefull.
         cancelled: true
     })
 }

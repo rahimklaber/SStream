@@ -127,8 +127,6 @@ impl StreamContractTrait for Contract{
         let token_client = tokenClient::new(&env, &stream.token_id);
         if amount_for_recipient > 0{
             token_client.transfer(&env.current_contract_address(), &stream.to, &amount_for_recipient);
-
-            update_amount_withdrawn(&env, stream_id, stream_data.a_withdraw + amount_for_recipient);
         }
 
         let amount_for_creator = stream.amount - amount_for_recipient;
@@ -138,7 +136,7 @@ impl StreamContractTrait for Contract{
 
         publish_cancel(&env, &stream, stream_id);
 
-        set_stream_data_cancelled(&env, stream_id);
+        set_stream_data_cancelled(&env, stream_id, stream_data.a_withdraw + amount_for_recipient);
     }
 
     fn get_stream(env: Env, stream_id: u64) -> StreamWithData{
