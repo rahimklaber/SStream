@@ -129,6 +129,7 @@ export default function GetStream() {
                             <span>to : {stream().stream.to.toString()}</span>
                             <span>token: {stream().stream.token_id.toString()}</span>
                             <span>amount: {(new Decimal((stream().stream.amount.toString())).div(10000000)).toFixed(7)} {stream().token.name}</span>
+                            <span>amount withdrawn: {new Decimal(stream().data.a_withdraw.toString()).div(10000000).toFixed(7)} {stream().token.name}</span>
                             <span>amount withdrawable: {(new Decimal(calcAmountWithdrawable(stream()).toString()).div(10000000)).toFixed(7)} {stream().token.name}</span>
                             <span>cancellable : {stream().stream.able_stop.toString()}</span>
 
