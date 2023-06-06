@@ -8,12 +8,13 @@ import { Card } from "solid-bootstrap";
 import { waitForTx } from "../contract/rpcHelpers";
 import { Show, createSignal } from "solid-js";
 import { fromXdr } from "../contract/xdrHelpers";
+import Decimal from "decimal.js";
 
 export default function CreateStream() {
     const [fields, setFields] = createStore({
         recipient: "",
-        amount: BigInt(0),
-        amount_per_second: 0,
+        amount: new Decimal(0),
+        amount_per_second: new Decimal(0),
         end_time: 0,
         cancellable: false
     });
@@ -23,13 +24,14 @@ export default function CreateStream() {
     const [done, setDone] = createSignal(false)
 
     async function createStreamAction() {
+        console.log(fields)
         let start_time = Math.floor(Date.now() / 1000)
-        let time_to_complete = Math.ceil(Number(fields.amount / BigInt(fields.amount_per_second)))
+        let time_to_complete = Math.ceil(fields.amount.div(fields.amount_per_second).toNumber())
         let end_time = start_time + time_to_complete
         const stream = new Stream(
             {
-                amount_per_second: fields.amount_per_second,
-                amount: fields.amount,
+                amount_per_second: fields.amount_per_second.mul(10000000).toNumber(),
+                amount: BigInt(fields.amount.mul(10000000).toNumber()),
                 end_time: end_time,
                 start_time: Math.floor(Date.now() / 1000),
                 from: Address.fromString(accountId()),
@@ -73,13 +75,13 @@ export default function CreateStream() {
                     Stream amount
                 </div>
                 <div class="input-group mb-1">
-                    <input onInput={(e) => setFields("amount", BigInt(e.target.value))} type="number" />
+                    <input onInput={(e) => setFields("amount", new Decimal(e.target.value))} type="number" />
                 </div>
                 <label>
                     Amount per second
                 </label>
                 <div class="input-group mb-1">
-                    <input onInput={(e) => setFields("amount_per_second", parseInt(e.target.value))} type="number" />
+                    <input onInput={(e) => setFields("amount_per_second", new Decimal(e.target.value))} type="number" />
                 </div>
 
 

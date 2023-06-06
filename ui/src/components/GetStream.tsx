@@ -9,6 +9,9 @@ import { waitForTx } from "../contract/rpcHelpers";
 import { xdr } from "soroban-client";
 import { fromXdr } from "../contract/xdrHelpers";
 import { getTokenSymbol } from "../contract/token";
+import Decimal from 'decimal.js';
+
+
 export default function GetStream() {
     const [stream, setStream] = createSignal<IStreamAndData | null>(null)
     const [streamId, setStreamId] = createSignal(null)
@@ -105,6 +108,7 @@ export default function GetStream() {
             <Card.Body class="m-auto">
                 <input type={"text"} oninput={(e) => setStreamId(parseInt(e.target.value))} placeholder="Stream id"></input>
                 <button disabled={streamId() == null || accountId() == null} onClick={() => {
+                    setLoading(true)
                     retrieveStream(streamId())
                     setLoading(false)
                     setDone(false)
@@ -124,8 +128,8 @@ export default function GetStream() {
                             <span>from : {stream().stream.from.toString()}</span>
                             <span>to : {stream().stream.to.toString()}</span>
                             <span>token: {stream().stream.token_id.toString()}</span>
-                            <span>amount: {stream().stream.amount.toString()} {stream().token.name}</span>
-                            <span>amount withdrawable: {calcAmountWithdrawable(stream()).toString()} {stream().token.name}</span>
+                            <span>amount: {(new Decimal((stream().stream.amount.toString())).div(10000000)).toFixed(7)} {stream().token.name}</span>
+                            <span>amount withdrawable: {(new Decimal(calcAmountWithdrawable(stream()).toString()).div(10000000)).toFixed(7)} {stream().token.name}</span>
                             <span>cancellable : {stream().stream.able_stop.toString()}</span>
 
                             <div>
