@@ -17,6 +17,9 @@ export interface IStreamAndData {
     data: {
         a_withdraw: bigint,
         cancelled: boolean
+    },
+    token?: {
+        name: string
     }
 }
 

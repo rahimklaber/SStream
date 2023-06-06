@@ -21,10 +21,44 @@ export default function CreateStream() {
     const [loading, setLoading] = createSignal(false)
     const [txResult, setTxResult] = createSignal(null)
     const [done, setDone] = createSignal(false)
+
+    async function createStreamAction() {
+        let start_time = Math.floor(Date.now() / 1000)
+        let time_to_complete = Math.ceil(Number(fields.amount / BigInt(fields.amount_per_second)))
+        let end_time = start_time + time_to_complete
+        const stream = new Stream(
+            {
+                amount_per_second: fields.amount_per_second,
+                amount: fields.amount,
+                end_time: end_time,
+                start_time: Math.floor(Date.now() / 1000),
+                from: Address.fromString(accountId()),
+                able_stop: fields.cancellable,
+                token_id: tokenId,
+                to: Address.fromString(fields.recipient)
+            }
+        )
+        console.log(stream);
+        setLoading(true)
+        let submitResult = await createStream(stream, accountId())
+        let success = await waitForTx(submitResult.hash)
+        if (success != null) {
+            let responseXdr = xdr.TransactionResult.fromXDR(success.resultXdr, "base64")
+            let scval = responseXdr.result().results()[0].tr().invokeHostFunctionResult().success()[0]
+            console.log(fromXdr(scval))
+            setTxResult(fromXdr(scval))
+        } else {
+            setTxResult("failed")
+        }
+        setLoading(false)
+        setDone(true)
+    }
+
+
     return (
 
-        <Card class="m-auto max-w-50 min-w-25 w-fit mt-5">
-           
+        <Card class="m-auto min-w-25  w-fit mt-5">
+
             <Card.Title class="m-auto">
                 Create Stream
             </Card.Title>
@@ -47,12 +81,6 @@ export default function CreateStream() {
                 <div class="input-group mb-1">
                     <input onInput={(e) => setFields("amount_per_second", parseInt(e.target.value))} type="number" />
                 </div>
-                {/* <label>
-                    End time
-                </label>
-                <div class="input-group mb-1">
-                    <input onInput={(e) => setFields("end_time", Math.round(Date.parse(e.target.value) / 1000))} type="datetime-local" />
-                </div> */}
 
 
                 <div>
@@ -61,58 +89,21 @@ export default function CreateStream() {
                     </label>
                     <input class="mx-1" onInput={(e) => setFields("cancellable", !fields.cancellable)} type="checkbox" />
                 </div>
-                    <button disabled = {!isConnected()} class={"m-1"} onclick={
-                        async () => {
-                            console.log(accountId())
-                            let start_time = Math.floor(Date.now() / 1000)
-                            let time_to_complete = Math.ceil(Number(fields.amount / BigInt(fields.amount_per_second)))
-                            let end_time = start_time + time_to_complete
-                            const stream = new Stream(
-                                {
-                                    amount_per_second: fields.amount_per_second,
-                                    amount: fields.amount,
-                                    end_time: end_time,
-                                    start_time: Math.floor(Date.now() / 1000),
-                                    from: Address.fromString(accountId()),
-                                    able_stop: fields.cancellable,
-                                    token_id: tokenId,
-                                    to: Address.fromString(fields.recipient)
-                                }
-                            )
-                            window.stream = stream
-                            console.log(stream);
-                            setLoading(true)
-                            let submitResult = await createStream(stream, accountId())
-                            let success = await waitForTx(submitResult.hash)
-                            if(success != null){
-                                let responseXdr = xdr.TransactionResult.fromXDR(success.resultXdr, "base64")
-                                let scval = responseXdr.result().results()[0].tr().invokeHostFunctionResult().success()[0]
-                                console.log(fromXdr(scval))
-                                setTxResult(fromXdr(scval))
-                            }else{
-                                setTxResult("failed")
-                            }
-                            setLoading(false)
-                            setDone(true)
-                            // setTimeout(() => {
-                            //     setDone(false)
-                            // }, 5000);
-                        }
-                    }>
-                        Create
-                    </button>
-                    <Show 
-            when={loading()}
-            fallback=""
-            >
-                loading...
-            </Show>
-            <Show 
-            when={done()}
-            fallback=""
-            >
-                result: {JSON.stringify(txResult())}
-            </Show>
+                <button disabled={!isConnected()} class={"m-1"} onclick={createStreamAction}>
+                    Create
+                </button>
+                <Show
+                    when={loading()}
+                    fallback=""
+                >
+                    loading...
+                </Show>
+                <Show
+                    when={done()}
+                    fallback=""
+                >
+                    result: {JSON.stringify(txResult())}
+                </Show>
             </Card.Body>
         </Card>
 

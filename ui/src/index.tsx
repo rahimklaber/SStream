@@ -1,6 +1,6 @@
 /* @refresh reload */
 import { render } from 'solid-js/web';
-import { Router } from '@solidjs/router';
+import { Route, Router, Routes, hashIntegration } from '@solidjs/router';
 import { Buffer } from 'buffer';
 import CreateStream from "./components/CreateStream";
 import GetStream from "./components/GetStream";
@@ -17,18 +17,28 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 }
 render(
     () => (
-        <div>
-            <Navbar bg='light'>
-                <Container>
-                    <Navbar.Brand href="#home">SStream</Navbar.Brand>
-                    <Connect/>
-                </Container>
-            </Navbar>
-            <Router>
-                <CreateStream />
-                <GetStream />
-            </Router>
-        </div>
+        <Router source={hashIntegration()}>
+            <div>
+                <Navbar bg='light'>
+                    <Container>
+                        <Navbar.Brand href="/#/">SStream</Navbar.Brand>
+                        <Nav class="me-auto">
+                            <Nav.Link href="#/lookup">Lookup Stream</Nav.Link>
+                            <Nav.Link href="#/create">Create Stream</Nav.Link>
+                        </Nav>
+                        <Connect />
+                    </Container>
+                </Navbar>
+                <div class='mt-5'>
+                    <Routes>
+                        <Route path="/" component={GetStream} />
+                        <Route path="/lookup" component={GetStream} />
+
+                        <Route path="/create" component={CreateStream} />
+                    </Routes>
+                </div>
+            </div>
+        </Router>
     ),
     root,
 );

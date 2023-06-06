@@ -8,6 +8,7 @@ import "../css/index.css"
 import { waitForTx } from "../contract/rpcHelpers";
 import { xdr } from "soroban-client";
 import { fromXdr } from "../contract/xdrHelpers";
+import { getTokenSymbol } from "../contract/token";
 export default function GetStream() {
     const [stream, setStream] = createSignal<IStreamAndData | null>(null)
     const [streamId, setStreamId] = createSignal(null)
@@ -19,10 +20,16 @@ export default function GetStream() {
     async function retrieveStream(id: number) {
         console.log(id)
         getStream(accountId(), id)
-            .then((result) => setStream(result))
+            .then(async (result) => {
+                result.token = { name: await getTokenSymbol(accountId()) }
+                return result
+            })
+            .then((res) => {
+                setStream(res)
+            })
     }
 
-    async function claim(){
+    async function claim() {
         setLoading(true)
         let submitResult = await withdrawStream(streamId()!, accountId())
             .catch((error) => error)
@@ -45,7 +52,7 @@ export default function GetStream() {
         setDone(true)
     }
 
-    async function cancell(){
+    async function cancell() {
         setLoading(true)
         let submitResult = await cancellStream(streamId()!, accountId())
             .catch((error) => error)
@@ -59,10 +66,10 @@ export default function GetStream() {
         if (success != null) {
             let responseXdr = xdr.TransactionResult.fromXDR(success.resultXdr, "base64")
             let scval = responseXdr.result().results()[0].tr().invokeHostFunctionResult().success()[0]
-            try{
+            try {
                 console.log(fromXdr(scval))
-            setTxResult(fromXdr(scval))
-            }catch{
+                setTxResult(fromXdr(scval))
+            } catch {
                 setTxResult("")
             }
         } else {
@@ -72,21 +79,21 @@ export default function GetStream() {
         setDone(true)
     }
 
-    function calcAmountWithdrawable(data: IStreamAndData) : bigint{
-        if(data.data.cancelled){
+    function calcAmountWithdrawable(data: IStreamAndData): bigint {
+        if (data.data.cancelled) {
             return 0n
         }
         let start_time = data.stream.start_time
         let end_time = data.stream.end_time
         let cur_time = Math.floor(Date.now() / 1000)
-        
-        if(cur_time > end_time){
+
+        if (cur_time > end_time) {
             return data.stream.amount - data.data.a_withdraw
         }
 
         let time_elapsed = cur_time - start_time
         let max_withdrawable = BigInt(data.stream.amount_per_second) * BigInt(time_elapsed)
-        return max_withdrawable - data.data.a_withdraw  
+        return max_withdrawable - data.data.a_withdraw
 
     }
 
@@ -116,18 +123,19 @@ export default function GetStream() {
                         <div class={"d-flex flex-column"}>
                             <span>from : {stream().stream.from.toString()}</span>
                             <span>to : {stream().stream.to.toString()}</span>
-                            <span>amount: {stream().stream.amount.toString()}</span>
-                            <span>amount withdrawable: {calcAmountWithdrawable(stream()).toString()}</span>
+                            <span>token: {stream().stream.token_id.toString()}</span>
+                            <span>amount: {stream().stream.amount.toString()} {stream().token.name}</span>
+                            <span>amount withdrawable: {calcAmountWithdrawable(stream()).toString()} {stream().token.name}</span>
                             <span>cancellable : {stream().stream.able_stop.toString()}</span>
-                            
-                           <div>
-                           <button onclick={claim}>
-                                claim
-                            </button>
-                            <button onclick={cancell}>
-                                cancell
-                            </button>
-                           </div>
+
+                            <div>
+                                <button onclick={claim}>
+                                    claim
+                                </button>
+                                <button onclick={cancell}>
+                                    cancell
+                                </button>
+                            </div>
                             <Show
                                 when={loading()}
                                 fallback=""
