@@ -88,7 +88,7 @@ impl StreamContractTrait for Contract{
             let time_elapsed = env.ledger().timestamp() - stream.start_time;
 
             // get the amount of funds that we can withdraw minus the amount we have already withdrawn
-            i128::from(stream.amount_per_second * time_elapsed) - stream_data.a_withdraw
+            core::cmp::min(i128::from(stream.amount_per_second * time_elapsed), stream.amount) - stream_data.a_withdraw
         };
 
         // don't invoke the token contract if amount == 0
@@ -121,7 +121,7 @@ impl StreamContractTrait for Contract{
             let time_elapsed = env.ledger().timestamp() - stream.start_time;
 
             // get the amount of funds that we can withdraw minus the amount we have already withdrawn
-            i128::from(stream.amount_per_second * time_elapsed) - stream_data.a_withdraw
+            core::cmp::min(i128::from(stream.amount_per_second * time_elapsed), stream.amount) - stream_data.a_withdraw
         };
 
         let token_client = tokenClient::new(&env, &stream.token_id);
