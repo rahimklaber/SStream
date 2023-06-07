@@ -104,7 +104,7 @@ impl StreamContractTrait for Contract{
         return amount_to_withdraw
     }
 
-    fn cancel_stream(env: Env, stream_id: u64) {
+    fn cancel_stream(env: Env, stream_id: u64) -> i128 {
         let stream = get_stream(&env, stream_id);
         let stream_data = get_stream_data(&env, stream_id);
 
@@ -137,6 +137,8 @@ impl StreamContractTrait for Contract{
         publish_cancel(&env, &stream, stream_id);
 
         set_stream_data_cancelled(&env, stream_id, stream_data.a_withdraw + amount_for_recipient);
+
+        amount_for_creator
     }
 
     fn get_stream(env: Env, stream_id: u64) -> StreamWithData{
