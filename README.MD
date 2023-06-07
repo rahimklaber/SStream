@@ -23,7 +23,25 @@ Second, input the recipient, the amount, the amount per second and whether the s
 
 ![create_s_2](https://github.com/rahimklaber/SStream/assets/21971137/dc78211b-7434-475e-b98f-0d447f6695d9)
 
+Third, fill in the form and click the `Create` button. Afterwards, approve the transaction in freighter.
+
+![image](https://github.com/rahimklaber/SStream/assets/21971137/306c03c7-bf17-4766-9fa7-1e463c1cf8e3)
+
+After a few seconds, the id of the stream will be shown. The id can then be used to lookup the stream.
+![image](https://github.com/rahimklaber/SStream/assets/21971137/45428eac-7d6c-43de-b518-f27a7ed28951)
+
+
 ### Viewing a stream
+First connect your wallet and click on `SStream` or `Lookup Stream`.
+
+![image](https://github.com/rahimklaber/SStream/assets/21971137/d2e9d291-6227-4f11-8b50-4382d9920464)
+
+To view a stream, its id needs to be known. In the future there will be a backend that indexes the streams and that can be used to look up streams for a given address.
+
+Insert the stream id into the field and click the `Get details` button. After a few second the details of the stream should show up.
+Two buttons will also appear that allows for claiming or cancelling a stream.
+![image](https://github.com/rahimklaber/SStream/assets/21971137/a4fa74b1-4a71-4dd4-8b62-e645e0cf6648)
+
 
 ### Claiming a stream
 
