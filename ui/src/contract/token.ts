@@ -3,7 +3,7 @@ import { contract, sorobanClient, tokenContract } from "./config"
 import { fromXdr } from "./xdrHelpers"
 
 const tokenCache: { [hex: string]: string } = {}
-
+//todo, I should also get the number of decimals
 export async function getTokenSymbol(accountId: string, tokenHex: string) {
     if (tokenCache[tokenHex]) {
         return tokenCache[tokenHex]

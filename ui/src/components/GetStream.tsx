@@ -50,10 +50,10 @@ export default function GetStream() {
         if (success != null) {
             let responseXdr = xdr.TransactionResult.fromXDR(success.resultXdr, "base64")
             let scval = responseXdr.result().results()[0].tr().invokeHostFunctionResult().success()[0]
-            console.log(fromXdr(scval))
-            setTxResult(fromXdr(scval))
+            let amountClaimed : bigint = fromXdr(scval)
+            setTxResult(new Decimal(amountClaimed.toString()).div(10000000).toFixed(7))
         } else {
-            setTxResult("failed")
+            setTxResult("submission failed")
         }
         setLoading(false)
         setDone(true)
@@ -74,8 +74,8 @@ export default function GetStream() {
             let responseXdr = xdr.TransactionResult.fromXDR(success.resultXdr, "base64")
             let scval = responseXdr.result().results()[0].tr().invokeHostFunctionResult().success()[0]
             try {
-                console.log(fromXdr(scval))
-                setTxResult(fromXdr(scval))
+                let amountReclaimed: bigint = fromXdr(scval)
+                setTxResult(new Decimal(amountReclaimed.toString()).div(10000000).toFixed(7))
             } catch {
                 setTxResult("")
             }
@@ -159,13 +159,8 @@ export default function GetStream() {
                                 when={done()}
                                 fallback=""
                             >
-                                withdraw amount: <code>
-                                    {JSON.stringify(txResult(), (key, value) =>
-                                        typeof value === 'bigint'
-                                            ? value.toString()
-                                            : value // return everything else unchanged
-                                        , '\t').replace(/\\n/g, '\n')}
-                                </code>
+                                withdraw amount: {txResult()} {stream().token.name}
+                                
                             </Show>
                         </div>
                     </Show>

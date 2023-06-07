@@ -114,18 +114,3 @@ export function bigIntToI128 (value: bigint): xdr.ScVal{
       new xdr.Int128Parts({ lo, hi }),
     );
   };
-
-  export const decodei128 = (xdrValue: string) => {
-    const value = xdr.ScVal.fromXDR(xdrValue, "base64");
-    try {
-      return new xdr.Int128Parts([
-        BigInt(value.i128().lo().low),
-        BigInt(value.i128().lo().high),
-        BigInt(value.i128().hi().low),
-        BigInt(value.i128().hi().high),
-      ]).toString();
-    } catch (error) {
-      console.log(error);
-      return 0;
-    }
-  };
