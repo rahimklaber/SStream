@@ -55,4 +55,17 @@ After Claiming, the amount withdrawn will be shown.
 ![image](https://github.com/rahimklaber/SStream/assets/21971137/c16ed951-421f-4426-915a-26522b925c57)
 
 ### Cancelling a stream
+First, lookup the stream you want to cancell by following the [Viewing a stream](#Viewing-a-stream) section.
+
+Next click the cancell button and approve the transaction in freighter.
+
+![image](https://github.com/rahimklaber/SStream/assets/21971137/d7a4bbc2-9486-4a8a-9268-2e6660ac0d30)
+
+After cancelling the amount returned to the creator will be shown.
+
+![image](https://github.com/rahimklaber/SStream/assets/21971137/08e9c5e6-7546-4376-a17a-c4239c85dc9c)
+
+
+
+
 
