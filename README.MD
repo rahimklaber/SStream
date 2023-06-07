@@ -44,6 +44,15 @@ Two buttons will also appear that allows for claiming or cancelling a stream.
 
 
 ### Claiming a stream
+First, lookup the stream you want to claim by following the [Viewing a stream](#Viewing-a-stream) section.
+
+Next click the claim button and approve the transaction in freighter.
+
+![image](https://github.com/rahimklaber/SStream/assets/21971137/4e56b550-1f72-4a3d-b700-6a09c36a6b9b)
+
+After Claiming, the amount withdrawn will be shown.
+
+![image](https://github.com/rahimklaber/SStream/assets/21971137/c16ed951-421f-4426-915a-26522b925c57)
 
 ### Cancelling a stream
 
