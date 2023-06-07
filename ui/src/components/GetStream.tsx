@@ -10,6 +10,7 @@ import { xdr } from "soroban-client";
 import { fromXdr } from "../contract/xdrHelpers";
 import { getTokenSymbol } from "../contract/token";
 import Decimal from 'decimal.js';
+import { tokenContract } from "../contract/config";
 
 
 export default function GetStream() {
@@ -20,16 +21,19 @@ export default function GetStream() {
     const [txResult, setTxResult] = createSignal(null)
     const [done, setDone] = createSignal(false)
 
+    const [error, setError] = createSignal(null)
+
     async function retrieveStream(id: number) {
         console.log(id)
         getStream(accountId(), id)
             .then(async (result) => {
-                result.token = { name: await getTokenSymbol(accountId()) }
+                result.token = { name: await getTokenSymbol(accountId(), tokenContract.contractId()) }
                 return result
             })
             .then((res) => {
                 setStream(res)
             })
+            .catch((err) => setError(err))
     }
 
     async function claim() {
@@ -109,6 +113,7 @@ export default function GetStream() {
                 <input type={"text"} oninput={(e) => setStreamId(parseInt(e.target.value))} placeholder="Stream id"></input>
                 <button disabled={streamId() == null || accountId() == null} onClick={() => {
                     setLoading(true)
+                    setError(null)
                     retrieveStream(streamId())
                     setLoading(false)
                     setDone(false)
@@ -118,9 +123,12 @@ export default function GetStream() {
                 </button>
                 <pre class={"m-2"}>
                     <Show
-                        when={stream() != null}
+                        when={stream() != null && error() == null}
                         fallback={(
                             <div>
+                                <code>
+                                {error()}
+                                </code>
                             </div>
                         )}
                     >

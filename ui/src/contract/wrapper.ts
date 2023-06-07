@@ -1,10 +1,10 @@
-import {Networks, TransactionBuilder, xdr} from "soroban-client";
-import {IStreamAndData, Stream} from "./types";
-import {contract, sorobanClient} from "./config";
-import {fromXdr} from "./xdrHelpers";
-import {sign} from "../components/Connect";
+import { Networks, TransactionBuilder, xdr } from "soroban-client";
+import { IStreamAndData, Stream } from "./types";
+import { contract, sorobanClient } from "./config";
+import { fromXdr } from "./xdrHelpers";
+import { sign } from "../components/Connect";
 
-export async function getStream(accountId: string, streamId: number): Promise<IStreamAndData | null>{
+export async function getStream(accountId: string, streamId: number): Promise<IStreamAndData | null> {
     let account = await sorobanClient.getAccount(accountId)
     let transaction = new TransactionBuilder(account, {
         fee: "1000",
@@ -18,14 +18,15 @@ export async function getStream(accountId: string, streamId: number): Promise<IS
 
 
     let result = await sorobanClient.simulateTransaction(transaction)
-    if (result.results) {
-        let scval = xdr.ScVal.fromXDR(result.results[0].xdr, "base64")
-        return fromXdr(scval)
+    console.debug(result)
+    if (result.error){
+        throw result.error
     }
-    return null
+    let scval = xdr.ScVal.fromXDR(result.results[0].xdr, "base64")
+    return fromXdr(scval)
 }
 
-export async function createStream(stream: Stream, accountID: string){
+export async function createStream(stream: Stream, accountID: string) {
     let account = await sorobanClient.getAccount(accountID)
     let transaction = new TransactionBuilder(account, {
         fee: "1000",
@@ -43,11 +44,11 @@ export async function createStream(stream: Stream, accountID: string){
     transaction = await sign(transaction)
 
     let result = await sorobanClient.sendTransaction(transaction)
-    
+    console.log(result)
     return result
 }
 
-export async function withdrawStream(streamId: number, accountID: string){
+export async function withdrawStream(streamId: number, accountID: string) {
     let account = await sorobanClient.getAccount(accountID)
     let transaction = new TransactionBuilder(account, {
         fee: "1000",
@@ -65,12 +66,12 @@ export async function withdrawStream(streamId: number, accountID: string){
     transaction = await sign(transaction)
 
     let result = await sorobanClient.sendTransaction(transaction)
-    
+
     return result
 }
 
 
-export async function cancellStream(streamId: number, accountID: string){
+export async function cancellStream(streamId: number, accountID: string) {
     let account = await sorobanClient.getAccount(accountID)
     let transaction = new TransactionBuilder(account, {
         fee: "1000",
@@ -88,6 +89,6 @@ export async function cancellStream(streamId: number, accountID: string){
     transaction = await sign(transaction)
 
     let result = await sorobanClient.sendTransaction(transaction)
-    
+
     return result
 }
