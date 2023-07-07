@@ -20,6 +20,7 @@ pub struct Stream {
 pub struct StreamData{
     // how much has been withdrawn
     pub a_withdraw: i128,
+    pub aditional_amount: i128,
     // wether the stream was cancelled
     pub cancelled: bool
 }

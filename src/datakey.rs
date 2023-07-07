@@ -42,18 +42,29 @@ pub fn get_stream_data(env: &Env, stream_id: u64) -> StreamData{
     }
 }
 
-pub fn set_stream_data_cancelled(env: &Env, stream_id: u64, total_amount_withdrawn: i128){
+pub fn set_stream_data_cancelled(env: &Env, stream_id: u64, total_amount_withdrawn: i128, additional_amount: i128){
     env.storage()
     .set(&DataKey::StreamData(stream_id), &StreamData{
+        aditional_amount: additional_amount,
         a_withdraw: total_amount_withdrawn, //not sure if this should be the value withdrawn by the recipient. Technically, its not needed anymore, but it might be usefull.
         cancelled: true
     })
 }
 
-pub fn update_amount_withdrawn(env: &Env, stream_id: u64, total_amount_withdrawn: i128){
+pub fn update_amount_withdrawn(env: &Env, stream_id: u64, total_amount_withdrawn: i128, additional_amount: i128){
     env.storage()
     .set(&DataKey::StreamData(stream_id), &StreamData{
+        aditional_amount: additional_amount,
         a_withdraw: total_amount_withdrawn,
         cancelled: false
     });
+}
+
+pub fn update_additional_amount(env: &Env, stream_id: u64, total_amount_withdrawn: i128, additional_amount: i128){
+    env.storage()
+        .set(&DataKey::StreamData(stream_id), &StreamData{
+            aditional_amount: additional_amount,
+            a_withdraw: total_amount_withdrawn,
+            cancelled: false
+        });
 }

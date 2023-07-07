@@ -400,7 +400,7 @@ fn basic_test(){
 
     token_client.mint(
         &user_1,
-        &100,
+        &150,
     );
 
 
@@ -432,5 +432,19 @@ fn basic_test(){
 
     stream_client.withdraw_stream(&stream_id);
 
-    assert_eq!(50, token_client.balance(&user_2),"a user cant withdraw the same money multiple times. so no double spending");    
+    assert_eq!(50, token_client.balance(&user_2),"a user cant withdraw the same money multiple times. so no double spending");
+
+    stream_client.top_up(&stream_id, &50);
+
+    env.ledger().set(LedgerInfo {
+        timestamp: 15,
+        protocol_version: 1,
+        sequence_number: 1,
+        base_reserve: 1,
+        network_id: Default::default()
+    });
+
+    stream_client.withdraw_stream(&stream_id);
+
+    assert_eq!(150, token_client.balance(&user_2),"user2 should have a balance of 50 after claiming from the stream");    
 }
