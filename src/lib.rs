@@ -7,7 +7,7 @@ mod events;
 use datakey::{get_and_inc_stream_id, DataKey, get_stream, get_stream_data, update_amount_withdrawn};
 use events::publish_transfer;
 use soroban_sdk::token::Client as tokenClient;
-use soroban_sdk::{assert_with_error, contractimpl, Env, panic_with_error, Address};
+use soroban_sdk::{assert_with_error, contractimpl, Env, panic_with_error, Address, contract};
 use types::{Stream, StreamData};
 use crate::datakey::{set_stream_data_cancelled, update_additional_amount};
 
@@ -34,7 +34,7 @@ pub trait StreamContractTrait{
 
     fn transfer_stream(env: Env, stream_id : u64, new_recipient: Address);
 }
-
+#[contract]
 pub struct Contract;
 
 
@@ -56,10 +56,12 @@ impl StreamContractTrait for Contract{
 
         // store stream
         env.storage()
+        .persistent()
         .set(&DataKey::Stream(stream_id),&stream);
 
         // store mutable stream data
         env.storage()
+        .persistent()
         .set(&DataKey::StreamData(stream_id), &StreamData{
             aditional_amount: 0,
             a_withdraw:0,
@@ -187,6 +189,7 @@ impl StreamContractTrait for Contract{
         };
 
         env.storage()
+        .persistent()
         .set(&DataKey::Stream(stream_id),&new_stream);
 
         publish_transfer(&env, &new_stream, stream_id, stream.to);

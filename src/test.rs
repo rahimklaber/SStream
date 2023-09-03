@@ -6,6 +6,7 @@ use soroban_sdk::testutils::{Address as _, Ledger, LedgerInfo};
 use crate::types::Stream;
 use crate::{Contract, ContractClient};
 use soroban_sdk::token::Client as tokenClient;
+use soroban_sdk::token::AdminClient as tokenAdminClient;
 
 #[test]
 #[should_panic]
@@ -57,13 +58,11 @@ fn cancell_should_fail_if_stream_not_cancellable(){
 
     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
     let token_client = tokenClient::new(&env, &token_contract_id);
-
+    let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
     let stream_contract_id = env.register_contract(None, Contract);
     let stream_client = ContractClient::new(&env, &stream_contract_id);
-
-
-    token_client.mint(
+    token_admin_client.mint(
         &user_1,
         &100,
     );
@@ -95,13 +94,14 @@ fn cancell_should_work_if_cancellable(){
 
     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
     let token_client = tokenClient::new(&env, &token_contract_id);
+    let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
 
     let stream_contract_id = env.register_contract(None, Contract);
     let stream_client = ContractClient::new(&env, &stream_contract_id);
 
 
-    token_client.mint(
+    token_admin_client.mint(
         &user_1,
         &100,
     );
@@ -137,13 +137,14 @@ fn recipient_should_receive_when_cancelled(){
 
     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
     let token_client = tokenClient::new(&env, &token_contract_id);
+    let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
 
     let stream_contract_id = env.register_contract(None, Contract);
     let stream_client = ContractClient::new(&env, &stream_contract_id);
 
 
-    token_client.mint(
+    token_admin_client.mint(
         &user_1,
         &100,
     );
@@ -166,7 +167,7 @@ fn recipient_should_receive_when_cancelled(){
         protocol_version: 1,
         sequence_number: 1,
         base_reserve: 1,
-        network_id: Default::default()
+        network_id: Default::default(),..Default::default()
     });
 
     stream_client.cancel_stream(&stream_id);
@@ -220,13 +221,14 @@ fn create_should_fail_when_amount_persecond_smaller_than_1(){
 
     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
     let token_client = tokenClient::new(&env, &token_contract_id);
+    let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
 
     let stream_contract_id = env.register_contract(None, Contract);
     let stream_client = ContractClient::new(&env, &stream_contract_id);
 
 
-    token_client.mint(
+    token_admin_client.mint(
         &user_1,
         &100,
     );
@@ -258,13 +260,13 @@ fn create_should_fail_when_amount_smaller_than_1(){
 
     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
     let token_client = tokenClient::new(&env, &token_contract_id);
-
+    let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
     let stream_contract_id = env.register_contract(None, Contract);
     let stream_client = ContractClient::new(&env, &stream_contract_id);
 
 
-    token_client.mint(
+    token_admin_client.mint(
         &user_1,
         &100,
     );
@@ -296,13 +298,13 @@ fn create_should_fail_when_starttime_bigger_than_endtime(){
 
     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
     let token_client = tokenClient::new(&env, &token_contract_id);
-
+    let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
     let stream_contract_id = env.register_contract(None, Contract);
     let stream_client = ContractClient::new(&env, &stream_contract_id);
 
 
-    token_client.mint(
+    token_admin_client.mint(
         &user_1,
         &100,
     );
@@ -333,13 +335,13 @@ fn should_not_be_able_to_claim_more_than_amount(){
 
     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
     let token_client = tokenClient::new(&env, &token_contract_id);
-
+    let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
     let stream_contract_id = env.register_contract(None, Contract);
     let stream_client = ContractClient::new(&env, &stream_contract_id);
 
 
-    token_client.mint(
+    token_admin_client.mint(
         &user_1,
         &100000000000,
     );
@@ -372,7 +374,7 @@ fn should_not_be_able_to_claim_more_than_amount(){
         protocol_version: 1,
         sequence_number: 1,
         base_reserve: 1,
-        network_id: Default::default()
+        network_id: Default::default(),..Default::default()
     });
 
 
@@ -392,13 +394,13 @@ fn basic_test(){
 
     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
     let token_client = tokenClient::new(&env, &token_contract_id);
-
+    let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
     let stream_contract_id = env.register_contract(None, Contract);
     let stream_client = ContractClient::new(&env, &stream_contract_id);
 
 
-    token_client.mint(
+    token_admin_client.mint(
         &user_1,
         &150,
     );
@@ -423,7 +425,7 @@ fn basic_test(){
         protocol_version: 1,
         sequence_number: 1,
         base_reserve: 1,
-        network_id: Default::default()
+        network_id: Default::default(),..Default::default()
     });
 
     stream_client.withdraw_stream(&stream_id);
@@ -441,7 +443,7 @@ fn basic_test(){
         protocol_version: 1,
         sequence_number: 1,
         base_reserve: 1,
-        network_id: Default::default()
+        network_id: Default::default(),..Default::default()
     });
 
     stream_client.withdraw_stream(&stream_id);
