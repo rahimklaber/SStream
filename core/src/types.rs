@@ -1,10 +1,32 @@
-use soroban_sdk::{contracttype, Address, BytesN};
+use soroban_sdk::{contracttype, Address, BytesN, Vec, Symbol};
+
+#[derive(Clone, Debug)]
+#[contracttype]
+struct SplitRecipientContract{
+    pub address: Address,
+    pub function: Symbol
+}
+
+#[derive(Clone, Debug)]
+#[contracttype]
+enum SplitRecipient{
+    User(Address,u64),
+    Contract(SplitRecipientContract,u64)
+}
+
+// #[derive(Clone, Debug)]
+// #[contracttype]
+// pub enum Recipient {
+//     User(Address),
+//     Split(Vec<SplitRecipient>)
+// }
 
 #[contracttype]
 #[derive(Clone, Debug)]
 pub struct Stream {
     pub from: Address,
     pub to: Address,
+    pub recipient: Vec<SplitRecipient>, //size equal to zero means send to to.
     pub amount : i128,
     pub start_time: u64,
     pub end_time: u64,
