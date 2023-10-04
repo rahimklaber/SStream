@@ -28,6 +28,9 @@ export async function getStream(accountId: string, streamId: number): Promise<IS
 
 export async function createStream(stream: Stream, accountID: string) {
     let account = await sorobanClient.getAccount(accountID)
+    contract.createStream({
+        stream:
+    })
     let transaction = new TransactionBuilder(account, {
         fee: "1000",
         networkPassphrase: Networks.FUTURENET

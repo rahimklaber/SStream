@@ -1,5 +1,5 @@
 import { createStore } from "solid-js/store";
-import { Stream } from "../contract/types";
+import {Stream} from "../../ts_bindings";
 import { Address, xdr } from "soroban-client";
 import { accountId, isConnected } from "./Connect";
 import { tokenId } from "../contract/config";
@@ -28,9 +28,9 @@ export default function CreateStream() {
         let start_time = Math.floor(Date.now() / 1000)
         let time_to_complete = Math.ceil(fields.amount.div(fields.amount_per_second).toNumber())
         let end_time = start_time + time_to_complete
-        const stream = new Stream(
+        const stream: Stream =
             {
-                amount_per_second: fields.amount_per_second.mul(10000000).toNumber(),
+                amount_per_second: fields.amount_per_second.mul(10000000),
                 amount: BigInt(fields.amount.mul(10000000).toNumber()),
                 end_time: end_time,
                 start_time: Math.floor(Date.now() / 1000),
@@ -39,7 +39,6 @@ export default function CreateStream() {
                 token_id: tokenId,
                 to: Address.fromString(fields.recipient)
             }
-        )
         console.log(stream);
         setLoading(true)
         let submitResult = await createStream(stream, accountId())

@@ -180,6 +180,7 @@ impl StreamContractTrait for Contract{
         let new_stream: Stream = Stream{
             from: stream.from,
             to: new_recipient,
+            recipients: stream.recipients,
             amount: stream.amount,
             able_stop: stream.able_stop,
             amount_per_second: stream.amount_per_second,
