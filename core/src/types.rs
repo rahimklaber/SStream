@@ -1,17 +1,18 @@
-use soroban_sdk::{contracttype, Address, BytesN, Vec, Symbol};
+use soroban_sdk::{contracttype, Address, BytesN, Vec, Symbol, Val};
 
 #[derive(Clone, Debug)]
 #[contracttype]
 pub struct SplitRecipientContract{
     pub address: Address,
-    pub function: Symbol
+    pub function: Symbol,
+    pub args: Vec<Val>
 }
 
 #[derive(Clone, Debug)]
 #[contracttype]
 pub enum SplitRecipient{
-    User(Address,u64),
-    Contract(SplitRecipientContract,u64)
+    User(Address,u32),
+    Contract(SplitRecipientContract,u32)
 }
 
 // #[derive(Clone, Debug)]

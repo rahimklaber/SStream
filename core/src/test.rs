@@ -1,12 +1,13 @@
-// extern crate std;
-// use std::println;
+extern crate std;
+use std::println;
 
-// use soroban_sdk::{Address, Env};
-// use soroban_sdk::testutils::{Address as _, Ledger, LedgerInfo};
-// use crate::types::Stream;
-// use crate::{Contract, ContractClient};
-// use soroban_sdk::token::Client as tokenClient;
-// use soroban_sdk::token::AdminClient as tokenAdminClient;
+use soroban_sdk::{Address, Env, vec};
+use soroban_sdk::testutils::{Address as _, Ledger, LedgerInfo};
+use crate::types::Stream;
+use crate::{Contract, ContractClient, StreamContractTrait};
+use soroban_sdk::token::Client as tokenClient;
+use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
+
 
 // #[test]
 // #[should_panic]
@@ -382,71 +383,73 @@
 
 // }
 
-// #[test]
-// fn basic_test(){
-//     let env: Env = Default::default();
-
-//     env.mock_all_auths();
+#[test]
+fn basic_test(){
+    let env: Env = Default::default();
 
 
-//     let user_1 = Address::random(&env);
-//     let user_2 = Address::random(&env);
-
-//     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
-//     let token_client = tokenClient::new(&env, &token_contract_id);
-//     let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
-
-//     let stream_contract_id = env.register_contract(None, Contract);
-//     let stream_client = ContractClient::new(&env, &stream_contract_id);
+    env.mock_all_auths();
 
 
-//     token_admin_client.mint(
-//         &user_1,
-//         &150,
-//     );
+    let user_1 = Address::random(&env);
+    let user_2 = Address::random(&env);
+
+    let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
+    let token_client = tokenClient::new(&env, &token_contract_id);
+    let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
+
+    let stream_contract_id = env.register_contract(None, Contract);
+    let stream_client = ContractClient::new(&env, &stream_contract_id);
 
 
-//     let stream_id = stream_client.create_stream(&Stream{
-//         from: user_1.clone(),
-//         to: user_2.clone(),
-//         amount: 100,
-//         start_time: 0,
-//         end_time: 10,
-//         amount_per_second: 10,
-//         token_id: token_contract_id.clone(),
-//         able_stop: false,
-//     });
+    token_admin_client.mint(
+        &user_1,
+        &150,
+    );
 
-//     let stream = stream_client.get_stream(&stream_id);
-//     println!("{:?}", stream);
 
-//     env.ledger().set(LedgerInfo {
-//         timestamp: 5,
-//         protocol_version: 1,
-//         sequence_number: 1,
-//         base_reserve: 1,
-//         network_id: Default::default(),..Default::default()
-//     });
+    let stream_id = stream_client.create_stream(&Stream{
+        from: user_1.clone(),
+        to: user_2.clone(),
+        amount: 100,
+        recipients: vec![&env],
+        start_time: 0,
+        end_time: 10,
+        amount_per_second: 10,
+        token_id: token_contract_id.clone(),
+        able_stop: false,
+    });
 
-//     stream_client.withdraw_stream(&stream_id);
+    let stream = stream_client.get_stream(&stream_id);
+    println!("{:?}", stream);
 
-//     assert_eq!(50, token_client.balance(&user_2),"user2 should have a balance of 50 after claiming from the stream");    
+    env.ledger().set(LedgerInfo {
+        timestamp: 5,
+        protocol_version: 1,
+        sequence_number: 1,
+        base_reserve: 1,
+        network_id: Default::default(),..Default::default()
+    });
 
-//     stream_client.withdraw_stream(&stream_id);
+    stream_client.withdraw_stream(&stream_id);
 
-//     assert_eq!(50, token_client.balance(&user_2),"a user cant withdraw the same money multiple times. so no double spending");
+    assert_eq!(50, token_client.balance(&user_2),"user2 should have a balance of 50 after claiming from the stream");    
 
-//     stream_client.top_up(&stream_id, &50);
+    stream_client.withdraw_stream(&stream_id);
 
-//     env.ledger().set(LedgerInfo {
-//         timestamp: 15,
-//         protocol_version: 1,
-//         sequence_number: 1,
-//         base_reserve: 1,
-//         network_id: Default::default(),..Default::default()
-//     });
+    assert_eq!(50, token_client.balance(&user_2),"a user cant withdraw the same money multiple times. so no double spending");
 
-//     stream_client.withdraw_stream(&stream_id);
+    stream_client.top_up(&stream_id, &50);
 
-//     assert_eq!(150, token_client.balance(&user_2),"user2 should have a balance of 50 after claiming from the stream");    
-// }
+    env.ledger().set(LedgerInfo {
+        timestamp: 15,
+        protocol_version: 1,
+        sequence_number: 1,
+        base_reserve: 1,
+        network_id: Default::default(),..Default::default()
+    });
+
+    stream_client.withdraw_stream(&stream_id);
+
+    assert_eq!(150, token_client.balance(&user_2),"user2 should have a balance of 50 after claiming from the stream");    
+}
