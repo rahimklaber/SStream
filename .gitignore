@@ -5,3 +5,5 @@
 /ui/node_modules
 /node_modules/
 /core/target/
+/offers/target/
+/offers/.idea/

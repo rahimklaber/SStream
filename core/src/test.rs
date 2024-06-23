@@ -1,13 +1,12 @@
 extern crate std;
 use std::println;
 
-use soroban_sdk::{Address, Env, vec};
 use soroban_sdk::testutils::{Address as _, Ledger, LedgerInfo};
+use soroban_sdk::{Address, Env, vec};
 use crate::types::Stream;
 use crate::{Contract, ContractClient, StreamContractTrait};
 use soroban_sdk::token::Client as tokenClient;
 use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
-
 
 // #[test]
 // #[should_panic]
@@ -383,6 +382,12 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 
 // }
 
+mod wasm_contract{
+    soroban_sdk::contractimport!(
+        file = "./target/wasm32-unknown-unknown/release/scf_streaming_payments.wasm"
+    );
+}
+
 #[test]
 fn basic_test(){
     let env: Env = Default::default();
@@ -391,15 +396,15 @@ fn basic_test(){
     env.mock_all_auths();
 
 
-    let user_1 = Address::random(&env);
-    let user_2 = Address::random(&env);
+    let user_1 = Address::generate(&env);
+    let user_2 = Address::generate(&env);
 
     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
     let token_client = tokenClient::new(&env, &token_contract_id);
     let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
-    let stream_contract_id = env.register_contract(None, Contract);
-    let stream_client = ContractClient::new(&env, &stream_contract_id);
+    let stream_contract_id = env.register_contract_wasm(None, wasm_contract::WASM);
+    let stream_client = wasm_contract::Client::new(&env, &stream_contract_id);
 
 
     token_admin_client.mint(
@@ -407,18 +412,20 @@ fn basic_test(){
         &150,
     );
 
+    env.budget().reset_default();
 
-    let stream_id = stream_client.create_stream(&Stream{
+    let stream_id = stream_client.create_stream(&wasm_contract::Stream{
         from: user_1.clone(),
         to: user_2.clone(),
         amount: 100,
-        recipients: vec![&env],
         start_time: 0,
         end_time: 10,
         amount_per_second: 10,
         token_id: token_contract_id.clone(),
         able_stop: false,
     });
+
+    env.budget().print();
 
     let stream = stream_client.get_stream(&stream_id);
     println!("{:?}", stream);

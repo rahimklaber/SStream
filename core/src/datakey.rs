@@ -36,11 +36,11 @@ pub fn get_stream(env: &Env, stream_id: u64) -> Stream{
     // }
 }
 
-pub fn store_stream(env: &Env, stream_id: u64, stream: Stream){
-    env.storage()
-        .persistent()
-        .set(&DataKey::Stream(stream_id), &stream)
-}
+// pub fn store_stream(env: &Env, stream_id: u64, stream: Stream){
+//     env.storage()
+//         .persistent()
+//         .set(&DataKey::Stream(stream_id), &stream)
+// }
 
 pub fn get_stream_data(env: &Env, stream_id: u64) -> StreamData{
     env.storage()
