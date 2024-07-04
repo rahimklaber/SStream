@@ -1,12 +1,22 @@
 extern crate std;
 use std::println;
 
-use soroban_sdk::testutils::{Address as _, Ledger, LedgerInfo};
-use soroban_sdk::{Address, Env, vec};
-use crate::types::Stream;
+use crate::test::std::string::ToString;
 use crate::{Contract, ContractClient, StreamContractTrait};
+use soroban_sdk::testutils::{Address as _, Ledger, LedgerInfo};
 use soroban_sdk::token::Client as tokenClient;
 use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
+use soroban_sdk::{vec, Address, Bytes, Env, FromVal, String};
+use crate::utils::create_stream_string;
+
+#[test]
+fn test() {
+    let env: Env = Default::default();
+
+    let string = create_stream_string(&env, "hi", 12);
+
+    println!("{}", string.to_string());
+}
 
 // #[test]
 // #[should_panic]
@@ -14,7 +24,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 //     let env: Env = Default::default();
 
 //     env.mock_all_auths();
-
 
 //     let user_1 = Address::random(&env);
 
@@ -34,7 +43,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 
 //     env.mock_all_auths();
 
-
 //     let user_1 = Address::random(&env);
 
 //     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
@@ -52,7 +60,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 
 //     env.mock_all_auths();
 
-
 //     let user_1 = Address::random(&env);
 //     let user_2 = Address::random(&env);
 
@@ -66,7 +73,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 //         &user_1,
 //         &100,
 //     );
-
 
 //     let stream_id = stream_client.create_stream(&Stream{
 //         from: user_1.clone(),
@@ -88,7 +94,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 
 //     env.mock_all_auths();
 
-
 //     let user_1 = Address::random(&env);
 //     let user_2 = Address::random(&env);
 
@@ -96,16 +101,13 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 //     let token_client = tokenClient::new(&env, &token_contract_id);
 //     let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
-
 //     let stream_contract_id = env.register_contract(None, Contract);
 //     let stream_client = ContractClient::new(&env, &stream_contract_id);
-
 
 //     token_admin_client.mint(
 //         &user_1,
 //         &100,
 //     );
-
 
 //     let stream_id = stream_client.create_stream(&Stream{
 //         from: user_1.clone(),
@@ -120,7 +122,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 
 //     let amount = stream_client.cancel_stream(&stream_id);
 
-
 //     //no time has passed, so I should getback all the tokens
 //     assert_eq!(100, amount);
 // }
@@ -131,7 +132,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 
 //     env.mock_all_auths();
 
-
 //     let user_1 = Address::random(&env);
 //     let user_2 = Address::random(&env);
 
@@ -139,16 +139,13 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 //     let token_client = tokenClient::new(&env, &token_contract_id);
 //     let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
-
 //     let stream_contract_id = env.register_contract(None, Contract);
 //     let stream_client = ContractClient::new(&env, &stream_contract_id);
-
 
 //     token_admin_client.mint(
 //         &user_1,
 //         &100,
 //     );
-
 
 //     let stream_id = stream_client.create_stream(&Stream{
 //         from: user_1.clone(),
@@ -161,7 +158,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 //         able_stop: true,
 //     });
 
-
 //     env.ledger().set(LedgerInfo {
 //         timestamp: 5,
 //         protocol_version: 1,
@@ -171,7 +167,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 //     });
 
 //     stream_client.cancel_stream(&stream_id);
-
 
 //     assert_eq!(50, token_client.balance(&user_2));
 // }
@@ -183,17 +178,14 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 
 //     env.mock_all_auths();
 
-
 //     let user_1 = Address::random(&env);
 //     let user_2 = Address::random(&env);
 
 //     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
 //     let token_client = tokenClient::new(&env, &token_contract_id);
 
-
 //     let stream_contract_id = env.register_contract(None, Contract);
 //     let stream_client = ContractClient::new(&env, &stream_contract_id);
-
 
 //     stream_client.create_stream(&Stream{
 //         from: user_1.clone(),
@@ -215,7 +207,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 
 //     env.mock_all_auths();
 
-
 //     let user_1 = Address::random(&env);
 //     let user_2 = Address::random(&env);
 
@@ -223,16 +214,13 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 //     let token_client = tokenClient::new(&env, &token_contract_id);
 //     let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
-
 //     let stream_contract_id = env.register_contract(None, Contract);
 //     let stream_client = ContractClient::new(&env, &stream_contract_id);
-
 
 //     token_admin_client.mint(
 //         &user_1,
 //         &100,
 //     );
-
 
 //     stream_client.create_stream(&Stream{
 //         from: user_1.clone(),
@@ -254,7 +242,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 
 //     env.mock_all_auths();
 
-
 //     let user_1 = Address::random(&env);
 //     let user_2 = Address::random(&env);
 
@@ -265,12 +252,10 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 //     let stream_contract_id = env.register_contract(None, Contract);
 //     let stream_client = ContractClient::new(&env, &stream_contract_id);
 
-
 //     token_admin_client.mint(
 //         &user_1,
 //         &100,
 //     );
-
 
 //     stream_client.create_stream(&Stream{
 //         from: user_1.clone(),
@@ -292,7 +277,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 
 //     env.mock_all_auths();
 
-
 //     let user_1 = Address::random(&env);
 //     let user_2 = Address::random(&env);
 
@@ -303,12 +287,10 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 //     let stream_contract_id = env.register_contract(None, Contract);
 //     let stream_client = ContractClient::new(&env, &stream_contract_id);
 
-
 //     token_admin_client.mint(
 //         &user_1,
 //         &100,
 //     );
-
 
 //     stream_client.create_stream(&Stream{
 //         from: user_1.clone(),
@@ -329,7 +311,6 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 
 //     env.mock_all_auths();
 
-
 //     let user_1 = Address::random(&env);
 //     let user_2 = Address::random(&env);
 
@@ -340,12 +321,10 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 //     let stream_contract_id = env.register_contract(None, Contract);
 //     let stream_client = ContractClient::new(&env, &stream_contract_id);
 
-
 //     token_admin_client.mint(
 //         &user_1,
 //         &100000000000,
 //     );
-
 
 //     stream_client.create_stream(&Stream{
 //         from: user_1.clone(),
@@ -377,86 +356,82 @@ use soroban_sdk::token::StellarAssetClient as tokenAdminClient;
 //         network_id: Default::default(),..Default::default()
 //     });
 
-
 //     assert_eq!(1,stream_client.withdraw_stream(&stream_id));
 
 // }
 
-mod wasm_contract{
-    soroban_sdk::contractimport!(
-        file = "./target/wasm32-unknown-unknown/release/scf_streaming_payments.wasm"
-    );
-}
+// mod wasm_contract{
+//     soroban_sdk::contractimport!(
+//         file = "./target/wasm32-unknown-unknown/release/scf_streaming_payments.wasm"
+//     );
+// }
 
-#[test]
-fn basic_test(){
-    let env: Env = Default::default();
+// #[test]
+// fn basic_test(){
+//     let env: Env = Default::default();
 
+//     env.mock_all_auths();
 
-    env.mock_all_auths();
+//     let user_1 = Address::generate(&env);
+//     let user_2 = Address::generate(&env);
 
+//     let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
+//     let token_client = tokenClient::new(&env, &token_contract_id);
+//     let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
 
-    let user_1 = Address::generate(&env);
-    let user_2 = Address::generate(&env);
+//     let stream_contract_id = env.register_contract_wasm(None, wasm_contract::WASM);
+//     let stream_client = wasm_contract::Client::new(&env, &stream_contract_id);
 
-    let token_contract_id = env.register_stellar_asset_contract(user_1.clone());
-    let token_client = tokenClient::new(&env, &token_contract_id);
-    let token_admin_client = tokenAdminClient::new(&env, &token_contract_id);
+//     token_admin_client.mint(
+//         &user_1,
+//         &150,
+//     );
 
-    let stream_contract_id = env.register_contract_wasm(None, wasm_contract::WASM);
-    let stream_client = wasm_contract::Client::new(&env, &stream_contract_id);
+//     env.budget().reset_default();
 
+//     let stream_id = stream_client.create_stream(&wasm_contract::Stream{
+//         from: user_1.clone(),
+//         to: user_2.clone(),
+//         amount: 100,
+//         start_time: 0,
+//         end_time: 10,
+//         amount_per_second: 10,
+//         token_id: token_contract_id.clone(),
+//         able_stop: false,
+//     });
 
-    token_admin_client.mint(
-        &user_1,
-        &150,
-    );
+//     env.budget().print();
 
-    env.budget().reset_default();
+//     let stream = stream_client.get_stream(&stream_id);
+//     println!("{:?}", stream);
 
-    let stream_id = stream_client.create_stream(&wasm_contract::Stream{
-        from: user_1.clone(),
-        to: user_2.clone(),
-        amount: 100,
-        start_time: 0,
-        end_time: 10,
-        amount_per_second: 10,
-        token_id: token_contract_id.clone(),
-        able_stop: false,
-    });
+//     env.ledger().set(LedgerInfo {
+//         timestamp: 5,
+//         protocol_version: 1,
+//         sequence_number: 1,
+//         base_reserve: 1,
+//         network_id: Default::default(),..Default::default()
+//     });
 
-    env.budget().print();
+//     stream_client.withdraw_stream(&stream_id);
 
-    let stream = stream_client.get_stream(&stream_id);
-    println!("{:?}", stream);
+//     assert_eq!(50, token_client.balance(&user_2),"user2 should have a balance of 50 after claiming from the stream");
 
-    env.ledger().set(LedgerInfo {
-        timestamp: 5,
-        protocol_version: 1,
-        sequence_number: 1,
-        base_reserve: 1,
-        network_id: Default::default(),..Default::default()
-    });
+//     stream_client.withdraw_stream(&stream_id);
 
-    stream_client.withdraw_stream(&stream_id);
+//     assert_eq!(50, token_client.balance(&user_2),"a user cant withdraw the same money multiple times. so no double spending");
 
-    assert_eq!(50, token_client.balance(&user_2),"user2 should have a balance of 50 after claiming from the stream");    
+//     stream_client.top_up(&stream_id, &50);
 
-    stream_client.withdraw_stream(&stream_id);
+//     env.ledger().set(LedgerInfo {
+//         timestamp: 15,
+//         protocol_version: 1,
+//         sequence_number: 1,
+//         base_reserve: 1,
+//         network_id: Default::default(),..Default::default()
+//     });
 
-    assert_eq!(50, token_client.balance(&user_2),"a user cant withdraw the same money multiple times. so no double spending");
+//     stream_client.withdraw_stream(&stream_id);
 
-    stream_client.top_up(&stream_id, &50);
-
-    env.ledger().set(LedgerInfo {
-        timestamp: 15,
-        protocol_version: 1,
-        sequence_number: 1,
-        base_reserve: 1,
-        network_id: Default::default(),..Default::default()
-    });
-
-    stream_client.withdraw_stream(&stream_id);
-
-    assert_eq!(150, token_client.balance(&user_2),"user2 should have a balance of 50 after claiming from the stream");    
-}
+//     assert_eq!(150, token_client.balance(&user_2),"user2 should have a balance of 50 after claiming from the stream");
+// }

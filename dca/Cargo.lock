@@ -678,12 +678,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "numtoa"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6aa2c4e539b869820a2b82e1aef6ff40aa85e65decdd5185e83fb4b1249cd00f"
-
-[[package]]
 name = "object"
 version = "0.32.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -840,7 +834,6 @@ checksum = "1ad4cc8da4ef723ed60bced201181d83791ad433213d8c24efffda1eec85d741"
 name = "scf_streaming_payments"
 version = "0.1.0"
 dependencies = [
- "numtoa",
  "soroban-sdk",
 ]
 
