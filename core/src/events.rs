@@ -1,10 +1,10 @@
 use crate::types::Stream;
 use soroban_sdk::{contracttype, symbol_short, Address, Env, Val};
 
-#[contracttype]
-pub enum Events {
-    StreamCreated,
-}
+// #[contracttype]
+// pub enum Events {
+//     StreamCreated,
+// }
 
 pub fn publish_stream_created(env: &Env, stream: &Stream, recipient: &Address, stream_id: u64) {
     env.events().publish(
@@ -34,16 +34,4 @@ pub fn publish_cancel(env: &Env, stream: &Stream, recipient: &Address, stream_id
 pub fn publish_top_up(env: &Env, stream: &Stream, stream_id: u64, amount: i128) {
     env.events()
         .publish((symbol_short!("TOP_UP"), &stream.from, stream_id), amount)
-}
-
-pub fn publish_transfer(env: &Env, recipient: &Address, stream_id: u64, old_recipient: &Address) {
-    env.events().publish(
-        (
-            symbol_short!("TRANSFER"),
-            old_recipient,
-            recipient,
-            stream_id,
-        ),
-        Val::from_void(),
-    )
 }

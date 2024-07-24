@@ -44,6 +44,10 @@ pub struct Contract;
 #[contractimpl]
 impl StreamContractTrait for Contract {
     fn init(env: Env, wasm_hash: BytesN<32>) {
+        if env.storage().instance().has(&DataKey::TokenWasmHash) {
+            panic!()
+        }
+
         env.storage()
             .instance()
             .set(&DataKey::TokenWasmHash, &wasm_hash)
@@ -145,6 +149,7 @@ impl StreamContractTrait for Contract {
         let stream_amount = stream.amount + stream_data.aditional_amount;
 
         let recipient_address = get_recipient_address(&env, &stream.recipient);
+        recipient_address.require_auth();
 
         // check if stream has been cancelled
         if stream_data.cancelled {
@@ -291,10 +296,6 @@ fn stream_assertions(env: &Env, stream_data: &StreamData, stream: &Stream) {
     );
     assert_with_error!(&env, !stream_data.cancelled, Error::StreamCancelled);
     assert_with_error!(&env, stream.able_stop, Error::StreamNotCancellable);
-}
-
-fn calc_percentage(percent: u32, total: i128) -> i128 {
-    total * i128::from(percent) / 100
 }
 
 #[cfg(test)]

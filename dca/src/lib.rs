@@ -13,9 +13,8 @@ use core::ops::Add;
 use datakey::{get_stream_contract_id, store_config};
 use soroban_sdk::token::TokenClient;
 use soroban_sdk::xdr::ToXdr;
-use soroban_sdk::{
-    assert_with_error, contract, contractimpl, panic_with_error, Address, Env, Symbol, Vec,
-};
+use soroban_sdk::{assert_with_error, contract, contractimpl, panic_with_error, Address, Env, Symbol, Vec, vec, IntoVal};
+use soroban_sdk::auth::{ContractContext, InvokerContractAuthEntry, SubContractInvocation};
 use stream_contract::Recipient;
 use types::DcaConfig;
 
@@ -33,6 +32,12 @@ mod soroswap_router {
     contractimport!(file = "../soroswap_router.wasm");
 }
 
+// mod soroswap_pair {
+//     use soroban_sdk::contractimport;
+//
+//     contractimport!(file = "../soroswap_pair.wasm");
+// }
+
 const FEE: i128 = 50; //000.50
 const PERCENT_DIV: i128 = 10_000;
 
@@ -45,7 +50,7 @@ pub trait DcaStreamContractTrait {
         keeper_address: Address,
         stream_id: u64,
         amount_out_min: i128,
-        path: Vec<Address>,
+        pair: Address,
     ) -> i128;
 }
 #[contract]
@@ -54,6 +59,12 @@ pub struct Contract;
 #[contractimpl]
 impl DcaStreamContractTrait for Contract {
     fn init(env: Env, stream_contract: Address, router_contract: Address) {
+        if env.storage().instance().has(&DataKey::StreamContract) {
+            panic!();
+        }
+
+        //todo add keeper addres
+
         env.storage()
             .instance()
             .set(&DataKey::StreamContract, &stream_contract);
@@ -113,7 +124,7 @@ impl DcaStreamContractTrait for Contract {
         keeper_address: Address,
         stream_id: u64,
         amount_out_min: i128,
-        mut path: Vec<Address>,
+        pair: Address,
     ) -> i128 {
         let config = get_config(&env, stream_id);
 
@@ -126,8 +137,24 @@ impl DcaStreamContractTrait for Contract {
         let swap_amount =
             (streamed_amount - fee_amount) * i128::from(config.percent_to_swap) / PERCENT_DIV;
 
+        let mut path = Vec::new(&env);
+
         path.push_front(config.source_token.clone());
         path.push_back(config.destination_token.clone());
+
+        env.authorize_as_current_contract(vec![
+            &env,
+            InvokerContractAuthEntry::Contract(SubContractInvocation {
+                context: ContractContext {
+                    contract: config.source_token.clone(),
+                    fn_name: Symbol::new(&env, "transfer"),
+                    args: (env.current_contract_address(), pair, swap_amount).into_val(&env),
+                },
+                // `sub_invocations` can be used to authorize even deeper
+                // calls.
+                sub_invocations: vec![&env],
+            }),
+        ]);
 
         let res = soroswap_router::Client::new(&env, &get_router_contract_id(&env))
             .swap_exact_tokens_for_tokens(
@@ -135,7 +162,7 @@ impl DcaStreamContractTrait for Contract {
                 &amount_out_min,
                 &path,
                 &env.current_contract_address(),
-                &(env.ledger().timestamp() + 1),
+                &(env.ledger().timestamp() + 10),
             );
 
         add_to_balance(&env, &keeper_address, &config.source_token, fee_amount);
